@@ -1,7 +1,26 @@
-var file = "./web.json";
-var name = "en_web";
-
 const fs = require('fs');
+var file, name;
+
+// Simple CLI system
+var param = process.argv;
+var folder = "data"
+if (param[2] == "-h") {
+	console.log(`
+		BibleC\n
+		node compile.js <file> <output folder>\n
+		file: Input file, Ex: ./jubl2000.json\n
+		output folder: Folder to output to. Ex: data\n
+	`);
+
+	process.exit()
+} else if (param.length == 2) {
+	console.log("Not enough parameters.\nUse as `node main.js ./jubl2000.json`");
+	process.exit()
+} else if (param.length == 4) {
+	file = param[2];
+	name = param[3];
+}
+
 var bible = require(file).osis.osisText.div
 
 // Use "global" variables, much more efficient than making
@@ -53,6 +72,10 @@ function loopVerses(verses) {
 function parseBibleData() {
 	// Include main C structs.
 	init = `
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 struct Book {
 	char *book;
 	int start;
@@ -69,6 +92,7 @@ struct Translation ` + name + ` = {
 ` + bible.length + `,
 {`;
 
+	// Initialize the C struct by generating C code
 	for (var i = 0; i < bibleData.length; i++) {
 		init += `	{`;
 		init += `"` + bibleData[i].book + `", `;
