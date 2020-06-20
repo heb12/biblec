@@ -1,27 +1,28 @@
 const fs = require('fs');
-var file, name;
+var file, name, folder;
 
 // Simple CLI system
 var param = process.argv;
-var folder = "data"
 if (param[2] == "-h") {
 	console.log(`
 		BibleC\n
-		node compile.js <file> <output folder>\n
+		node compile.js <file> <name> <output folder>\n
 		file: Input file, Ex: ./jubl2000.json\n
-		output folder: Folder to output to. Ex: data\n
+		name: web, kjv2000...\n
+		output folder: Folder to output to. Ex: bibles/data\n
 	`);
 
 	process.exit()
-} else if (param.length == 2) {
-	console.log("Not enough parameters.\nUse as `node main.js ./jubl2000.json`");
-	process.exit()
-} else if (param.length == 4) {
+} else if (param.length < 3) {
+	console.log("Not enough parameters.\nUse as `node main.js ./jubl2000.json web bible/web`");
+	process.exit();
+} else if (param.length == 5) {
 	file = param[2];
 	name = param[3];
+	folder = param[4];
 }
 
-var bible = require(file).osis.osisText.div
+var bible = require(file).osis.osisText.div;
 
 // Use "global" variables, much more efficient than making
 // a copy of a 4mb string 10 times.
@@ -75,18 +76,7 @@ function parseBibleData() {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-struct Book {
-	char *book;
-	int start;
-	int length;
-	int chapters[151];
-};
-
-struct Translation {
-	int length;
-	struct Book book[66];
-};
+#include "../core.h"
 
 struct Translation ` + name + ` = {
 ` + bible.length + `,
@@ -110,53 +100,31 @@ struct Translation ` + name + ` = {
 		}
 	}
 
-	init += `\n};
-int main() {
-	char book[] = "Heb";
-	int chapter = 4;
-	int verse = 12;
-
-	// First, find the book
-	int bookID = 0;
-	for (int i = 0; i < ` + name + `.length; i++) {
-		if (strcmp(book, ` + name + `.book[i].book) == 0) {
-			bookID = i;
-		}
-	}
-
-	// Next, find the chapter.
-	int line = ` + name + `.book[bookID].start;
-	for (int i = 0; i < chapter - 1; i++) {
-		line += ` + name + `.book[bookID].chapters[i];
-	}
-
-	// Add the line over to the specific verse
-	line += verse - 1;
-
-	FILE *file = fopen("` + name + `.txt", "r");
-
-	// Grab the specific line from the file
-	char verseText[586];
-	int i = 0;
-	while (fgets(verseText, sizeof(verseText), file) != NULL) {
-		if (i == line) {
-			printf("%s\\n", verseText);
-			break;
-		} else {
-			i++;
-		}
-	}
-
-    fclose(file);
-}`;
+	init += `\n};`;
 }
 
 var error = [];
 
 parseBible();
-fs.writeFile("web/" + name + ".txt", verseFile, function (err) {error.push(err)});
+fs.writeFile(
+	folder + "/" + name + ".txt",
+	verseFile,
+	function (err) {error.push(err)}
+);
 
 parseBibleData();
-fs.writeFile("web/" + name + ".c", init, function (err) {error.push(err)});
+fs.writeFile(
+	folder + "/" + name + ".c",
+	init,
+	function (err) {error.push(err)}
+);
 
-console.log("Done. Errors:", error)
+// TODO: Replace 66 with real calculated number
+fs.writeFile(
+	folder + "/" + name + ".h",
+	`extern struct Translation ` + name + `[66];`,
+	function (err) {error.push(err)}
+);
+
+
+console.log("Done. Errors: ", error);
