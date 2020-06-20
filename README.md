@@ -1,7 +1,7 @@
 # BibleC
 
 A minimal Bible format designed for the C language.  
-It uses a JS script to convert a OSIS JSON file (http://api.heb12.com/translations-json/)  
+It uses a JS script to convert a OSIS JSON file (http://api.heb12.com/translations/json/)  
 to a C struct and a TXT file. No dependencies, just a simple   
 struct.  
 
