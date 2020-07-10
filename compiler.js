@@ -122,11 +122,13 @@ function loopVerses(linesPassed, verses) {
 function generateIndexFile(bibleData, name, lang) {
 	indexFile += "#name:" + name + "\n";
 	indexFile += "#lang:" + lang + "\n";
-	indexFile += "#books:" + bibleData.length + "\n";
+	indexFile += "#location:" + "bibles/web.txt" + "\n";
+	indexFile += "#length:" + bibleData.length + "\n";
 	for (var i = 0; i < bibleData.length; i++) {
 		indexFile += "@" + bibleData[i].book;
-		indexFile += " " + bibleData[i].start + " " + bibleData[i].end + "|";
-		indexFile += bibleData[i].chapters.join(" ");
+		indexFile += " " + bibleData[i].start + " " + bibleData[i].end;
+
+		indexFile += "\n!" + bibleData[i].chapters.join(" ");
 		indexFile += "\n";
 	}
 }

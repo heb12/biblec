@@ -9,13 +9,12 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 
 	char line[600];
 	FILE *file = fopen(indexLocation, "r");
-
 	int book = 0;
 	while (fgets(line, 600, file) != NULL) {
 		// Remove trailing breakline
 		strtok(line, "\n");
 
-		// Plus 1 char (remove @/#)
+		// Plus 1 char (remove @/#/!)
 		char *contents = line + 1;
 
 		// Duplication for editing (after first char)
@@ -37,8 +36,6 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 				translation->length = atoi(text); // TODO: Fix
 			}
 		} else if (line[0] == '@') {
-			strtok(afterFirst, "|");
-
 			// The the reading string is reused for this, as it won't be
 			// used anymore.
 			strtok(afterFirst, " ");
@@ -51,18 +48,13 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 			// Create another duplicate for content after the |
 			char afterFirst2[strlen(contents)];
 			strcpy(afterFirst2, contents);
-
-			// Set it to the second part
-			char *chapters;
-			chapters = strtok(afterFirst2, "|");
-			chapters = strtok(NULL, "|");
-
+		} else if (line[0] == '!') {
 			// Loop through chapters and set them in the struct
 			int currentChapter = 0;
-			strtok(chapters, " ");
-			while (chapters != NULL) {
-				translation->book[book].chapters[currentChapter] = atoi(chapters);
-				chapters = strtok(NULL, " ");
+			char *chapter = strtok(afterFirst, " ");
+			while (chapter != NULL) {
+				translation->book[book].chapters[currentChapter] = atoi(chapter);
+				chapter = strtok(NULL, " ");
 				currentChapter++;
 			}
 
@@ -124,6 +116,9 @@ void getVerses(int *error, char result[][600], struct Translation translation, c
 		if (i >= line + to) {
 			break;
 		} else if (i >= line) {
+			// Remove trailing breakline
+			strtok(verseText, "\n");
+			
 			strcpy(result[versesAdded], verseText);
 			versesAdded++;
 		}

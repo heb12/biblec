@@ -23,8 +23,10 @@ int main() {
 		"Gen",
 		1,
 		1,
-		1
+		5
 	);
 
-	printf("%s\n", result[0]);
+	for (int i = 0; i < 5; i++) {
+		printf("%d. %s\n", (i + 1), result[i]);
+	}
 }
