@@ -38,16 +38,13 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 		} else if (line[0] == '@') {
 			// The the reading string is reused for this, as it won't be
 			// used anymore.
-			strtok(afterFirst, " ");
+			char *bookInfo;
+			bookInfo = strtok(afterFirst, " ");
 			strcpy(translation->book[book].name, afterFirst);
-			strtok(NULL, " ");
-			translation->book[book].start = atoi(afterFirst);
-			strtok(NULL, " ");
-			translation->book[book].length = atoi(afterFirst);
-
-			// Create another duplicate for content after the |
-			char afterFirst2[strlen(contents)];
-			strcpy(afterFirst2, contents);
+			bookInfo = strtok(NULL, " ");
+			translation->book[book].start = atoi(bookInfo);
+			bookInfo = strtok(NULL, " ");
+			translation->book[book].length = atoi(bookInfo);
 		} else if (line[0] == '!') {
 			// Loop through chapters and set them in the struct
 			int currentChapter = 0;
@@ -79,7 +76,13 @@ int getLine(int *error, struct Translation translation, char *book, int chapter,
 	// Book int was not changed and not found
 	if (bookID == -1) {
 		*error = -1;
-		return 1;
+		return 0;
+	}
+
+	// Requested chapter is larger than book legth
+	if (translation.book[bookID].length < chapter) {
+		*error = -2;
+		return 0;
 	}
 
 	// Next, find the chapter.
@@ -118,7 +121,7 @@ void getVerses(int *error, char result[][600], struct Translation translation, c
 		} else if (i >= line) {
 			// Remove trailing breakline
 			strtok(verseText, "\n");
-			
+
 			strcpy(result[versesAdded], verseText);
 			versesAdded++;
 		}
