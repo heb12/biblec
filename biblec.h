@@ -1,5 +1,8 @@
 enum Error {
-	DEFAULT = 0,
+	DEFAULT=0,
+	BOOK_NOT_FOUND=1,
+	CHAPTER_TOO_HIGH=2,
+	READING_OVERFLOW=3
 };
 
 struct Translation {
@@ -17,4 +20,4 @@ struct Translation {
 
 int getLine(int *error, struct Translation translation, char *book, int chapter, int verse);
 void getVerses(int *error, char result[][600], struct Translation translation, char *book, int chapter, int verse, int to);
-void parseIndexFile(int *error, struct Translation *translation, char *indexLocation);
+void parseIndexFile(int *error, struct Translation *translation, char *indexLocation, char *textLocation);

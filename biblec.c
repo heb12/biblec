@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "biblec.h"
-//#include "bibles/web.h"
 
-void parseIndexFile(int *error, struct Translation *translation, char *indexLocation) {
+// Parse BibleC index file, see format.md
+void parseIndexFile(int *error, struct Translation *translation, char *indexLocation, char *textLocation) {
 	*error = 0;
+
+	// Set text location
+	strcpy(translation->location, textLocation);
+
+	// TODO: Test validity of textLocation and indexLocation
 
 	char line[600];
 	FILE *file = fopen(indexLocation, "r");
@@ -30,8 +35,6 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 				strcpy(translation->name, text);
 			} else if (strcmp(afterFirst, "lang") == 0) {
 				strcpy(translation->lang, text);
-			} else if (strcmp(afterFirst, "location") == 0) {
-				strcpy(translation->location, text);
 			} else if (strcmp(afterFirst, "length") == 0) {
 				translation->length = atoi(text); // TODO: Fix
 			}
@@ -62,18 +65,19 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 	fclose(file);
 }
 
+// Get line from Book, chapter, verse
 int getLine(int *error, struct Translation translation, char *book, int chapter, int verse) {
 	*error = 0;
 
 	// First, find the book
 	int bookID = -1;
 	for (int i = 0; i < translation.length; i++) {
-		if (strcmp(book, translation.book[i].name) == 0) {
+		if (!strcmp(book, translation.book[i].name)) {
 			bookID = i;
 		}
 	}
 
-	// Book int was not changed and not found
+	// Book int not found
 	if (bookID == -1) {
 		*error = -1;
 		return 0;
@@ -96,6 +100,7 @@ int getLine(int *error, struct Translation translation, char *book, int chapter,
 	return line;
 }
 
+// Get verses into array
 void getVerses(int *error, char result[][600], struct Translation translation, char *book, int chapter, int verse, int to) {
 	*error = 0;
 	int tryLine;
@@ -104,7 +109,7 @@ void getVerses(int *error, char result[][600], struct Translation translation, c
 		*error = tryLine;
 		return;
 	}
-
+	
 	FILE *file = fopen(translation.location, "r");
 
 	// Grab the specific line from the file
@@ -113,9 +118,10 @@ void getVerses(int *error, char result[][600], struct Translation translation, c
 	int versesAdded = 0;
 	while (1) {
 		if (fgets(verseText, 600, file) == NULL) {
+			// TODO: Add reading overflow error
 			break;
-		};
-
+		}
+		
 		if (i >= line + to) {
 			break;
 		} else if (i >= line) {
