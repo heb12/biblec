@@ -1,3 +1,5 @@
+// This script compiles OSIS JSON into BibleC format.
+
 const fs = require('fs');
 
 // Use "global" variables, much more efficient than making
@@ -42,7 +44,7 @@ function cli() {
 	var bibleData = [];
 	parseBible(bibleData);
 	fs.writeFile(
-		folder + "/" + name + ".txt",
+		folder + "/" + name + ".t",
 		verseFile,
 		function (err) {error.push(err)}
 	);
@@ -67,7 +69,7 @@ function cli() {
 		generateIndexFile(bibleData, name, lang);
 		console.log(indexFile);
 		fs.writeFile(
-			folder + "/" + name + ".index",
+			folder + "/" + name + ".i",
 			indexFile,
 			function (err) {error.push(err)}
 		);

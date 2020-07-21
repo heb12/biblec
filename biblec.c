@@ -10,12 +10,15 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 	// Set text location
 	strcpy(translation->location, textLocation);
 
-	// TODO: Test validity of textLocation and indexLocation
-
-	char line[600];
-	FILE *file = fopen(indexLocation, "r");
+	FILE *index = fopen(indexLocation, "r");
+	if (index == NULL) {
+		*error = -1;
+		return;
+	}
+	
+	char line[600];	
 	int book = 0;
-	while (fgets(line, 600, file) != NULL) {
+	while (fgets(line, 600, index) != NULL) {
 		// Remove trailing breakline
 		strtok(line, "\n");
 
@@ -62,7 +65,7 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 		}
 	}
 
-	fclose(file);
+	fclose(index);
 }
 
 // Get line from Book, chapter, verse
