@@ -2,10 +2,10 @@
 
 A minimal Bible format designed for the C language.  
 It uses a JS script to convert a OSIS JSON file (http://api.heb12.com/translations/json/)  
-to a C struct and a TXT file. No dependencies, just a simple   
-struct.  
+to a minimal format designed with minimalism in mind.
 
-This is not in production yet, so mainly a test here.
+It creates an index file, and then a text file. The index file can be used to calculate  
+what line a verse starts on in the text file, and it seeks to it.
 
 ## Usage:
 Use the `build.sh` script when pulled for the first time.
@@ -17,5 +17,4 @@ Use the `build.sh` script when pulled for the first time.
 2. Support for more than 1 verse (John 3 16-18)
 
 ## Future:
-1. Support for half-bibles
 2. Write compiler in something lighter than NodeJS
