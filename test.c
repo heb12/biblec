@@ -11,7 +11,8 @@ int main() {
 	parseIndexFile(
 		&tryFile,
 		&loadedTranslations[0],
-		"bibles/web.index"
+		"bibles/web.i",
+		"bibles/web.t"
 	);
 
 	int tryStruct;
