@@ -1,11 +1,11 @@
 enum Max {
-	VERSE_LENGTH = 600
+	VERSE_LENGTH = 600,
+	INDEX_MAX_LENGTH = 500
 };
 
 enum BibleC_error {
 	FILE_NOT_FOUND = -1,
-	BOOK_NOT_FOUND = -1,
-	INDEX_MAX_LENGTH = 600
+	BOOK_NOT_FOUND = -1
 };
 
 struct Reader {

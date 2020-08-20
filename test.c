@@ -22,7 +22,7 @@ int main() {
 	}
 
 	int tryReader;
-	struct Reader reader = newReader(
+	struct Reader reader = reader_new(
 		&tryReader,
 		&loadedTranslations[0],
 		"Gen",
@@ -37,8 +37,8 @@ int main() {
 	}
 
 	int status = 0;
-	for (;;) {
-		status = readerNext(&reader);
+	for (;;) {;;
+		status = reader_next(&reader);
 		if (status) {break;}
 		printf("%s\n", reader.result);
 	}

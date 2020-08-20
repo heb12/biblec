@@ -15,7 +15,6 @@ int strToInt(char *buf) {
 
 // Parse BibleC index file, see format.md
 void parseIndexFile(int *error, struct Translation *translation, char *indexLocation, char *textLocation) {
-
 	// Set text location
 	strcpy(translation->location, textLocation);
 
@@ -126,7 +125,7 @@ int getLine(int *error, struct Translation *translation, char *book, int chapter
 	return line;
 }
 
-int readerNext(struct Reader *reader) {
+int reader_next(struct Reader *reader) {
 	// End of verses
 	if (reader->linesRead > reader->to) {
 		return -2;
@@ -144,7 +143,7 @@ int readerNext(struct Reader *reader) {
 }
 
 // Get verses into array
-struct Reader newReader(int *error, struct Translation *translation, char *book, int chapter, int verse, int to) {
+struct Reader reader_new(int *error, struct Translation *translation, char *book, int chapter, int verse, int to) {
 	*error = 0;
 	struct Reader reader;
 
@@ -168,9 +167,9 @@ struct Reader newReader(int *error, struct Translation *translation, char *book,
 	int i = 0;
 	char verseText[VERSE_LENGTH];
 	while (1) {
-		if (fgets(verseText, 600, reader.file) == NULL) {
-			// TODO: Add reading overflow error
-			break;
+		if (fgets(verseText, VERSE_LENGTH, reader.file) == NULL) {
+            *error = -2;
+			return reader;
 		}
 
 		if (i == line) {break;}
