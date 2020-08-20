@@ -92,7 +92,7 @@ int getBookID(struct Translation *translation, char *book) {
 	}
 
 	// Book int not found
-	if (bookID == -1) {
+	if (bookID == BOOK_NOT_FOUND) {
 	 	return BOOK_NOT_FOUND;
 	}
 
@@ -105,7 +105,7 @@ int getLine(int *error, struct Translation *translation, char *book, int chapter
 
 	int bookID = getBookID(translation, book);
 	if (bookID == BOOK_NOT_FOUND) {
-		*error = bookID;
+		*error = BOOK_NOT_FOUND;
 		return 0;
 	}
 
@@ -126,41 +126,56 @@ int getLine(int *error, struct Translation *translation, char *book, int chapter
 	return line;
 }
 
+int readerNext(struct Reader *reader) {
+	// End of verses
+	if (reader->linesRead > reader->to) {
+		return -2;
+	}
+
+    char foo[600];
+
+	if (fgets(reader->result, VERSE_LENGTH, reader->file) == NULL) {
+		return -1;
+	}
+
+	strtok(reader->result, "\n"); // Strip '\n'
+    reader->linesRead++;
+	return 0;
+}
+
 // Get verses into array
-void getVerses(int *error, char result[][VERSE_LENGTH], struct Translation *translation, char *book, int chapter, int verse, int to) {
+struct Reader newReader(int *error, struct Translation *translation, char *book, int chapter, int verse, int to) {
 	*error = 0;
+	struct Reader reader;
+
 	int tryLine;
 	int line = getLine(&tryLine, translation, book, chapter, verse);
 
 	if (tryLine) {
 		*error = tryLine;
-		return;
+		return reader;
 	}
 
-	FILE *file = fopen(translation->location, "r");
+	reader.book = book;
+	reader.chapter = chapter;
+	reader.verse = verse;
+	reader.to = to;
 
-	// Grab the specific line from the file
-	char verseText[600];
+	reader.linesRead = 0;
+    reader.file = fopen(translation->location, "r");
+
+    // Loop through until it gets to the line
 	int i = 0;
-	int versesAdded = 0;
+	char verseText[VERSE_LENGTH];
 	while (1) {
-		if (fgets(verseText, 600, file) == NULL) {
+		if (fgets(verseText, 600, reader.file) == NULL) {
 			// TODO: Add reading overflow error
 			break;
 		}
 
-		if (i >= line + to) {
-			break;
-		} else if (i >= line) {
-			// Remove trailing breakline
-			strtok(verseText, "\n");
-
-			strcpy(result[versesAdded], verseText);
-			versesAdded++;
-		}
-
+		if (i == line) {break;}
 		i++;
 	}
 
-    fclose(file);
+    return reader;
 }

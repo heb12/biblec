@@ -8,10 +8,22 @@ enum BibleC_error {
 	INDEX_MAX_LENGTH = 600
 };
 
+struct Reader {
+	char *book;
+	int chapter;
+	int verse;
+	int to;
+
+	char result[VERSE_LENGTH];
+
+	FILE *file;
+	int linesRead;
+};
+
 struct Translation {
 	char name[20];
 	char lang[20];
-	char location[20];
+	char location[50];
 	int length;
 	struct Book {
 		char name[20];

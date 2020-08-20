@@ -21,24 +21,27 @@ int main() {
 		return 0;
 	}
 
-	int tryVerses;
-	char result[30][VERSE_LENGTH];
-	getVerses(
-		&tryVerses,
-		result,
+	int tryReader;
+	struct Reader reader = newReader(
+		&tryReader,
 		&loadedTranslations[0],
 		"Gen",
 		1,
-		1,
+		2,
 		5
 	);
 
-	if (tryVerses) {
+	if (tryReader) {
 		printf("Verse error");
 		return 0;
 	}
 
-	for (int i = 0; i < 5; i++) {
-		printf("%d. %s\n", i + 1, result[i]);
+	int status = 0;
+	for (;;) {
+		status = readerNext(&reader);
+		if (status) {break;}
+		printf("%s\n", reader.result);
 	}
+
+	fclose(reader.file);
 }
