@@ -14,6 +14,7 @@ int strToInt(char *buf) {
 }
 
 // Parse BibleC index file, see format.md
+// Not very well written or planned out.
 void parseIndexFile(int *error, struct Translation *translation, char *indexLocation, char *textLocation) {
 	// Set text location
 	strcpy(translation->location, textLocation);
@@ -83,56 +84,27 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 
 int getBookID(struct Translation *translation, char *book) {
 	// First, find the book
-	int bookID = -1;
+	int bookID = BOOK_NOT_FOUND;
 	for (int i = 0; i < translation->length; i++) {
 		if (!strcmp(book, translation->book[i].name)) {
 			bookID = i;
 		}
 	}
 
-	// Book int not found
 	if (bookID == BOOK_NOT_FOUND) {
-	 	return BOOK_NOT_FOUND;
+	 	return bookID;
 	}
 
 	return bookID;
 }
 
-// Get line from Book, chapter, verse
-int getLine(int *error, struct Translation *translation, char *book, int chapter, int verse) {
-	*error = 0;
-
-	int bookID = getBookID(translation, book);
-	if (bookID == BOOK_NOT_FOUND) {
-		*error = BOOK_NOT_FOUND;
-		return 0;
-	}
-
-	// Requested chapter is larger than book legth
-	if (translation->book[bookID].length < chapter) {
-		*error = -2;
-		return 0;
-	}
-
-	// Next, find the chapter.
-	int line = translation->book[bookID].start;
-	for (int i = 0; i < chapter - 1; i++) {
-		line += translation->book[bookID].chapters[i];
-	}
-
-	// Add the line over to the specific verse
-	line += verse - 1;
-	return line;
-}
-
 int reader_next(struct Reader *reader) {
-	// End of verses
+	// Reached end of requested verses
 	if (reader->linesRead > reader->to) {
-		return -2;
+		return -1;
 	}
 
-    char foo[600];
-
+    // End of file
 	if (fgets(reader->result, VERSE_LENGTH, reader->file) == NULL) {
 		return -1;
 	}
@@ -147,13 +119,37 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 	*error = 0;
 	struct Reader reader;
 
-	int tryLine;
-	int line = getLine(&tryLine, translation, book, chapter, verse);
-
-	if (tryLine) {
-		*error = tryLine;
+    // Check book ID
+	int bookID = getBookID(translation, book);
+	if (bookID == BOOK_NOT_FOUND) {
+		*error = bookID;
 		return reader;
 	}
+
+	// Check if requested chapter is larger than book length
+	if (translation->book[bookID].length < chapter) {
+		*error = CHAPTER_TOO_BIG;
+		return reader;
+	}
+
+	// Grab start line, and add until specified chapter is reached.
+    int c = 0;
+	int line = translation->book[bookID].start;
+	for (; c < chapter - 1; c++) {
+		line += translation->book[bookID].chapters[c];
+	}
+
+    // When 0 is passed for to, grab the entire chapter.
+    if (to == 0) {
+        to = translation->book[bookID].chapters[c] - 1;
+    } else {
+        // Else, "to" refers to how many verse to
+        // count in the struct. Set it here.
+        to = to - verse;
+    }
+
+	// Add the line over to the specific verse
+	line += verse - 1;
 
 	reader.book = book;
 	reader.chapter = chapter;
@@ -167,13 +163,13 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 	int i = 0;
 	char verseText[VERSE_LENGTH];
 	while (1) {
+        if (i == line) {break;}
+		i++;
+
 		if (fgets(verseText, VERSE_LENGTH, reader.file) == NULL) {
-            *error = -2;
+            *error = FILE_ERROR;
 			return reader;
 		}
-
-		if (i == line) {break;}
-		i++;
 	}
 
     return reader;

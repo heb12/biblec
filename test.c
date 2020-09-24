@@ -25,10 +25,10 @@ int main() {
 	struct Reader reader = reader_new(
 		&tryReader,
 		&loadedTranslations[0],
-		"Gen",
+		"John",
+		3,
 		1,
-		2,
-		5
+		0
 	);
 
 	if (tryReader) {
@@ -37,7 +37,7 @@ int main() {
 	}
 
 	int status = 0;
-	for (;;) {;;
+	while (1) {
 		status = reader_next(&reader);
 		if (status) {break;}
 		printf("%s\n", reader.result);
