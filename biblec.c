@@ -2,7 +2,7 @@
 #include <string.h>
 #include "main.h"
 
-// Simple fast minimal function for atoi
+// Simple+fast minimal function for atoi
 int strToInt(char *buf) {
     int ret = 0;
     for (; *buf != '\0'; buf++) {
@@ -14,11 +14,7 @@ int strToInt(char *buf) {
 }
 
 // Parse BibleC index file, see format.md
-// Not very well written or planned out.
-void parseIndexFile(int *error, struct Translation *translation, char *indexLocation, char *textLocation) {
-	// Set text location
-	strcpy(translation->location, textLocation);
-
+void parseIndexFile(int *error, struct Translation *translation, char *indexLocation) {
 	FILE *index = fopen(indexLocation, "r");
 	if (index == NULL) {
 		*error = FILE_NOT_FOUND;
@@ -34,7 +30,7 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 		// Pointer
 		char *contents = line + 1;
 
-		// General purpose dupilcation for manipulation
+		// Make a duplicate for manipulation
 		char afterFirst[INDEX_MAX_LENGTH];
 		strcpy(afterFirst, contents);
 
@@ -51,11 +47,13 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 			afterFirst[c] = '\0';
 			contents++; // Increment to skip ':'
 
-			if (strcmp(afterFirst, "name") == 0) {
+			if (!strcmp(afterFirst, "name")) {
 				strcpy(translation->name, contents);
-			} else if (strcmp(afterFirst, "lang") == 0) {
+			} else if (!strcmp(afterFirst, "lang")) {
 				strcpy(translation->lang, contents);
-			} else if (strcmp(afterFirst, "length") == 0) {
+			} else if (!strcmp(afterFirst, "location")) {
+				strcpy(translation->location, contents);
+			} else if (!strcmp(afterFirst, "length")) {
 				translation->length = strToInt(contents); // TODO: Fix
 			}
 		} else if (line[0] == '@') {

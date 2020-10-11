@@ -8,6 +8,9 @@ var file, type, folder, bible;
 var verseFile = ``;
 var indexFile = ``;
 
+
+
+
 // Initial "CLI". Not advanced.
 cli();
 function cli() {
@@ -78,6 +81,9 @@ function cli() {
 	console.log("Done. Errors: ", error);
 }
 
+
+
+
 function parseBible(bibleData) {
 	var linesPassed = [0];
 	for (var b = 0; b < bible.length; b++) {
@@ -108,12 +114,16 @@ function parseBible(bibleData) {
 	}
 }
 
+
+
 function loopVerses(linesPassed, verses) {
 	for (var v = 0; v < verses.length; v++) {
 		verseFile += verses[v][1] + "\n";
 		linesPassed[0]++;
 	}
 }
+
+
 
 // Generate an index file for C to parse.
 // #name:web
@@ -124,7 +134,7 @@ function loopVerses(linesPassed, verses) {
 function generateIndexFile(bibleData, name, lang) {
 	indexFile += "#name:" + name + "\n";
 	indexFile += "#lang:" + lang + "\n";
-	indexFile += "#location:" + "bibles/web.txt" + "\n";
+	indexFile += "#location:" + "bibles/web.t" + "\n";
 	indexFile += "#length:" + bibleData.length + "\n";
 	for (var i = 0; i < bibleData.length; i++) {
 		indexFile += "@" + bibleData[i].book;
@@ -134,6 +144,9 @@ function generateIndexFile(bibleData, name, lang) {
 		indexFile += "\n";
 	}
 }
+
+
+
 
 // Convert the JS object into a C struct.
 function generateCStruct(bibleData, name) {
