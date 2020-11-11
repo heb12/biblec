@@ -4,11 +4,11 @@
 
 // Simple+fast minimal function for atoi
 int strToInt(char *buf) {
-    int ret = 0;
-    for (; *buf != '\0'; buf++) {
-        ret *= 10;
-        ret += *buf - '0';
-    }
+	int ret = 0;
+	for (; *buf != '\0'; buf++) {
+		ret *= 10;
+		ret += *buf - '0';
+	}
 
 	return ret;
 }
@@ -102,13 +102,13 @@ int reader_next(struct Reader *reader) {
 		return -1;
 	}
 
-    // End of file
+	// End of file
 	if (fgets(reader->result, VERSE_LENGTH, reader->file) == NULL) {
 		return -1;
 	}
 
 	strtok(reader->result, "\n"); // Strip '\n'
-    reader->linesRead++;
+	reader->linesRead++;
 	return 0;
 }
 
@@ -117,7 +117,7 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 	*error = 0;
 	struct Reader reader;
 
-    // Check book ID
+	// Check book ID
 	int bookID = getBookID(translation, book);
 	if (bookID == BOOK_NOT_FOUND) {
 		*error = bookID;
@@ -131,20 +131,20 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 	}
 
 	// Grab start line, and add until specified chapter is reached.
-    int c = 0;
+	int c = 0;
 	int line = translation->book[bookID].start;
 	for (; c < chapter - 1; c++) {
 		line += translation->book[bookID].chapters[c];
 	}
 
-    // When 0 is passed for to, grab the entire chapter.
-    if (to == 0) {
-        to = translation->book[bookID].chapters[c] - 1;
-    } else {
-        // Else, "to" refers to how many verse to
-        // count in the struct. Set it here.
-        to = to - verse;
-    }
+	// When 0 is passed for to, grab the entire chapter.
+	if (to == 0) {
+		to = translation->book[bookID].chapters[c] - 1;
+	} else {
+		// Else, "to" refers to how many verse to
+		// count in the struct. Set it here.
+		to = to - verse;
+	}
 
 	// Add the line over to the specific verse
 	line += verse - 1;
@@ -155,20 +155,20 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 	reader.to = to;
 
 	reader.linesRead = 0;
-    reader.file = fopen(translation->location, "r");
+	reader.file = fopen(translation->location, "r");
 
-    // Loop through until it gets to the line
+	// Loop through until it gets to the line
 	int i = 0;
 	char verseText[VERSE_LENGTH];
 	while (1) {
-        if (i == line) {break;}
+		if (i == line) {break;}
 		i++;
 
 		if (fgets(verseText, VERSE_LENGTH, reader.file) == NULL) {
-            *error = FILE_ERROR;
+			*error = FILE_ERROR;
 			return reader;
 		}
 	}
 
-    return reader;
+	return reader;
 }
