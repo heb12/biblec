@@ -12,8 +12,7 @@ int main() {
 	parseIndexFile(
 		&tryFile,
 		&loadedTranslations[0],
-		"bibles/web.i",
-		"bibles/web.t"
+		"bibles/web.i"
 	);
 
 	if (tryFile) {
@@ -28,7 +27,7 @@ int main() {
 		"John",
 		3,
 		1,
-		0
+		0 // Get whole chapter
 	);
 
 	if (tryReader) {

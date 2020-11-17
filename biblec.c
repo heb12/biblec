@@ -2,7 +2,7 @@
 #include <string.h>
 #include "main.h"
 
-// Simple+fast minimal function for atoi
+// Split chars and ints from string
 int strToInt(char *buf) {
 	int ret = 0;
 	for (; *buf != '\0'; buf++) {
@@ -20,6 +20,11 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 		*error = FILE_NOT_FOUND;
 		return;
 	}
+
+	// If location is never filled in, then assume text
+	// file location is in the same folder as the index file.
+	indexLocation[strlen(indexLocation) - 1] = 't';
+	strcpy(translation->location, indexLocation);
 
 	char line[INDEX_MAX_LENGTH];
 	int book = 0;
@@ -54,7 +59,7 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 			} else if (!strcmp(afterFirst, "location")) {
 				strcpy(translation->location, contents);
 			} else if (!strcmp(afterFirst, "length")) {
-				translation->length = strToInt(contents); // TODO: Fix
+				translation->length = strToInt(contents);
 			}
 		} else if (line[0] == '@') {
 			char *bookInfo = strtok(afterFirst, " ");
@@ -112,7 +117,7 @@ int reader_next(struct Reader *reader) {
 	return 0;
 }
 
-// Get verses into array
+// Create a new reader structure
 struct Reader reader_new(int *error, struct Translation *translation, char *book, int chapter, int verse, int to) {
 	*error = 0;
 	struct Reader reader;
@@ -156,6 +161,10 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 
 	reader.linesRead = 0;
 	reader.file = fopen(translation->location, "r");
+	if (reader.file == NULL) {
+		*error = FILE_ERROR;
+		return reader;
+	}
 
 	// Loop through until it gets to the line
 	int i = 0;
