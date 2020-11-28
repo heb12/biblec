@@ -23,9 +23,9 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 
 	// If location is never filled in, then assume text
 	// file location is in the same folder as the index file.
-	indexLocation[strlen(indexLocation) - 1] = 't';
 	strcpy(translation->location, indexLocation);
-
+	translation->location[strlen(indexLocation) - 1] = 't';
+	
 	char line[INDEX_MAX_LENGTH];
 	int book = 0;
 	while (fgets(line, INDEX_MAX_LENGTH, index) != NULL) {
@@ -80,6 +80,8 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 
 			book++;
 		}
+
+		// Else, it is a "comment"
 	}
 
 	fclose(index);

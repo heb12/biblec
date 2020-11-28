@@ -5,15 +5,15 @@
 #include "biblec.h"
 
 // Runtime struct
-struct Translation loadedTranslations[10];
+struct Translation loadedTranslations;
 
 int main() {
 	int tryFile = 0;
 	parseIndexFile(
 		&tryFile,
-		&loadedTranslations[0],
+		&loadedTranslations,
 		"bibles/web.i"
-	);
+	);	
 
 	if (tryFile) {
 		printf("Index parsing error");
@@ -23,7 +23,7 @@ int main() {
 	int tryReader;
 	struct Reader reader = reader_new(
 		&tryReader,
-		&loadedTranslations[0],
+		&loadedTranslations,
 		"John",
 		3,
 		1,
@@ -44,3 +44,4 @@ int main() {
 
 	fclose(reader.file);
 }
+
