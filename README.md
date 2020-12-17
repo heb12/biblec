@@ -8,13 +8,16 @@ It creates an index file, and then a text file. The index file can be used to ca
 what line a verse starts on in the text file, and it seeks to it.
 
 ## Usage:
-Use the `build.sh` script when pulled for the first time.
-
--> "For the word of God is living, and active, and sharper than any two-edged sword, and piercing even to the dividing of soul and spirit, of both joints and marrow, and quick to discern the thoughts and intents of the heart."
+```
+mkdir bibles
+wget http://api.heb12.com/translations/json/en/web.json
+node compiler.js ./web.json web bibles
+tcc biblec.c test.c
+./a.out
+```
+*Note: TCC and GCC should both work.
 
 ## Features:
 1. First calculates line of Bible verse, then grabs it.
 2. Support for more than 1 verse (John 3 16-18)
-
-## Future:
-2. Write compiler in something lighter than NodeJS
+3. Support for Getting entire chapter
