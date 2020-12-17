@@ -12,7 +12,7 @@ int main() {
 	parseIndexFile(
 		&tryFile,
 		&loadedTranslations,
-		"bibles/web.i"
+		"../bibles/web.i"
 	);	
 
 	if (tryFile) {
@@ -44,4 +44,3 @@ int main() {
 
 	fclose(reader.file);
 }
-
