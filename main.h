@@ -2,7 +2,7 @@
 #define __BIBLEC 1
 
 enum BibleC_max {
-	VERSE_LENGTH = 600,
+	VERSE_LENGTH = 700,
 	INDEX_MAX_LENGTH = 500
 };
 
