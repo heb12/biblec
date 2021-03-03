@@ -1,3 +1,6 @@
+#ifndef __BIBLEC
+#define __BIBLEC 1
+
 enum BibleC_max {
 	VERSE_LENGTH = 600,
 	INDEX_MAX_LENGTH = 500
@@ -38,3 +41,5 @@ struct Translation {
 struct Reader reader_new(int *error, struct Translation *translation, char *book, int chapter, int verse, int to);
 void parseIndexFile(int *error, struct Translation *translation, char *indexLocation);
 int reader_next(struct Reader *reader);
+
+#endif
