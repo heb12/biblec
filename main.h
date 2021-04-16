@@ -38,8 +38,8 @@ struct Translation {
 	}book[66];
 };
 
-struct Reader reader_new(int *error, struct Translation *translation, char *book, int chapter, int verse, int to);
-void parseIndexFile(int *error, struct Translation *translation, char *indexLocation);
+int parseIndexFile(struct Translation *translation, char *indexLocation);
+int reader_new(struct Reader *reader, struct Translation *translation, char *book, int chapter, int verse, int to);
 int reader_next(struct Reader *reader);
 
 #endif

@@ -2,15 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-#include "biblec.h"
 
 // Runtime struct
 struct Translation loadedTranslations;
 
 int main() {
-	int tryFile = 0;
-	parseIndexFile(
-		&tryFile,
+	int tryFile = parseIndexFile(
 		&loadedTranslations,
 		"../bibles/web.i"
 	);	
@@ -20,9 +17,9 @@ int main() {
 		return 0;
 	}
 
-	int tryReader;
-	struct Reader reader = reader_new(
-		&tryReader,
+	struct Reader reader;
+	int tryReader = reader_new(
+		&reader,
 		&loadedTranslations,
 		"John",
 		3,

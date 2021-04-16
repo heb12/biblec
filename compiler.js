@@ -1,4 +1,7 @@
 // This script compiles OSIS JSON into BibleC format.
+// Why JS? Why not Python, Golang..
+// I dunno. It's my goto scripting language, and also
+// JS has some nice sorting functions. (I think?)
 
 const fs = require('fs');
 
@@ -7,9 +10,6 @@ const fs = require('fs');
 var file, type, folder, bible;
 var verseFile = ``;
 var indexFile = ``;
-
-
-
 
 // Initial "CLI". Not advanced.
 cli();
@@ -123,8 +123,6 @@ function loopVerses(linesPassed, verses) {
 	}
 }
 
-
-
 // Generate an index file for C to parse.
 // #name:web
 // #lang:en
@@ -144,9 +142,6 @@ function generateIndexFile(bibleData, name, lang) {
 		indexFile += "\n";
 	}
 }
-
-
-
 
 // Convert the JS object into a C struct.
 function generateCStruct(bibleData, name) {

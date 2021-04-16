@@ -14,11 +14,10 @@ int strToInt(char *buf) {
 }
 
 // Parse BibleC index file, see format.md
-void parseIndexFile(int *error, struct Translation *translation, char *indexLocation) {
+int parseIndexFile(struct Translation *translation, char *indexLocation) {
 	FILE *index = fopen(indexLocation, "r");
 	if (index == NULL) {
-		*error = FILE_NOT_FOUND;
-		return;
+		return FILE_NOT_FOUND;
 	}
 
 	// If location is never filled in, then assume text
@@ -81,10 +80,11 @@ void parseIndexFile(int *error, struct Translation *translation, char *indexLoca
 			book++;
 		}
 
-		// Else, it is a "comment"
+		// Any other line start chars will be skipped
 	}
 
 	fclose(index);
+	return 0;
 }
 
 int getBookID(struct Translation *translation, char *book) {
@@ -116,27 +116,23 @@ int reader_next(struct Reader *reader) {
 }
 
 // Create a new reader structure
-struct Reader reader_new(int *error, struct Translation *translation, char *book, int chapter, int verse, int to) {
-	*error = 0;
-	struct Reader reader;
+int reader_new(struct Reader *reader, struct Translation *translation, char *book, int chapter, int verse, int to) {
+	int c;
 
 	// Check book ID
 	int bookID = getBookID(translation, book);
 	if (bookID == BOOK_NOT_FOUND) {
-		*error = bookID;
-		return reader;
+		return BOOK_NOT_FOUND;
 	}
 
 	// Check if requested chapter is larger than book length
 	if (translation->book[bookID].length < chapter) {
-		*error = CHAPTER_TOO_BIG;
-		return reader;
+		return CHAPTER_TOO_BIG;
 	}
 
 	// Grab start line, and add until specified chapter is reached.
-	int c = 0;
 	int line = translation->book[bookID].start;
-	for (; c < chapter - 1; c++) {
+	for (c = 0; c < chapter - 1; c++) {
 		line += translation->book[bookID].chapters[c];
 	}
 
@@ -152,16 +148,15 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 	// Add the line over to the specific verse
 	line += verse - 1;
 
-	reader.book = book;
-	reader.chapter = chapter;
-	reader.verse = verse;
-	reader.to = to;
+	reader->book = book;
+	reader->chapter = chapter;
+	reader->verse = verse;
+	reader->to = to;
 
-	reader.linesRead = 0;
-	reader.file = fopen(translation->location, "r");
-	if (reader.file == NULL) {
-		*error = FILE_ERROR;
-		return reader;
+	reader->linesRead = 0;
+	reader->file = fopen(translation->location, "r");
+	if (reader->file == NULL) {
+		return FILE_ERROR;
 	}
 
 	// Loop through until it gets to the line
@@ -171,11 +166,10 @@ struct Reader reader_new(int *error, struct Translation *translation, char *book
 		if (i == line) {break;}
 		i++;
 
-		if (fgets(verseText, VERSE_LENGTH, reader.file) == NULL) {
-			*error = FILE_ERROR;
-			return reader;
+		if (fgets(verseText, VERSE_LENGTH, reader->file) == NULL) {
+			return FILE_ERROR;
 		}
 	}
 
-	return reader;
+	return 0;
 }
