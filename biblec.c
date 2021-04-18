@@ -14,7 +14,7 @@ int strToInt(char *buf) {
 }
 
 // Parse BibleC index file, see format.md
-int parseIndexFile(struct Translation *translation, char *indexLocation) {
+int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 	FILE *index = fopen(indexLocation, "r");
 	if (index == NULL) {
 		return FILE_NOT_FOUND;
@@ -24,14 +24,14 @@ int parseIndexFile(struct Translation *translation, char *indexLocation) {
 	// file location is in the same folder as the index file.
 	strcpy(translation->location, indexLocation);
 	translation->location[strlen(indexLocation) - 1] = 't';
-	
-	char line[INDEX_MAX_LENGTH];
+
 	int book = 0;
+	char line[INDEX_MAX_LENGTH];
 	while (fgets(line, INDEX_MAX_LENGTH, index) != NULL) {
 		// Remove trailing breakline
 		strtok(line, "\n");
 
-		// Pointer
+		// Pointer to line content
 		char *contents = line + 1;
 
 		// Make a duplicate for manipulation
@@ -87,8 +87,7 @@ int parseIndexFile(struct Translation *translation, char *indexLocation) {
 	return 0;
 }
 
-int getBookID(struct Translation *translation, char *book) {
-	// First, find the book
+int getBookID(struct Biblec_translation *translation, char *book) {
 	int bookID = BOOK_NOT_FOUND;
 	for (int i = 0; i < translation->length; i++) {
 		if (!strcmp(book, translation->book[i].name)) {
@@ -99,7 +98,7 @@ int getBookID(struct Translation *translation, char *book) {
 	return bookID;
 }
 
-int reader_next(struct Reader *reader) {
+int biblec_next(struct Biblec_reader *reader) {
 	// Reached end of requested verses
 	if (reader->linesRead > reader->to) {
 		return -1;
@@ -116,7 +115,8 @@ int reader_next(struct Reader *reader) {
 }
 
 // Create a new reader structure
-int reader_new(struct Reader *reader, struct Translation *translation, char *book, int chapter, int verse, int to) {
+int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translation, 
+char *book, int chapter, int verse, int to) {
 	int c;
 
 	// Check book ID
@@ -136,13 +136,13 @@ int reader_new(struct Reader *reader, struct Translation *translation, char *boo
 		line += translation->book[bookID].chapters[c];
 	}
 
-	// When 0 is passed for to, grab the entire chapter.
+	// When 0 is passed for "to", grab the entire chapter.
+	// Else, "to" refers to how many verse to
+	// count in the struct.
 	if (to == 0) {
 		to = translation->book[bookID].chapters[c] - 1;
 	} else {
-		// Else, "to" refers to how many verse to
-		// count in the struct. Set it here.
-		to = to - verse;
+		to -= verse;
 	}
 
 	// Add the line over to the specific verse
@@ -160,12 +160,8 @@ int reader_new(struct Reader *reader, struct Translation *translation, char *boo
 	}
 
 	// Loop through until it gets to the line
-	int i = 0;
 	char verseText[VERSE_LENGTH];
-	while (1) {
-		if (i == line) {break;}
-		i++;
-
+	for (int i = 0; i != line; i++) {
 		if (fgets(verseText, VERSE_LENGTH, reader->file) == NULL) {
 			return FILE_ERROR;
 		}

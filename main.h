@@ -1,7 +1,7 @@
 #ifndef __BIBLEC
 #define __BIBLEC 1
 
-enum BibleC_max {
+enum Biblec_max {
 	VERSE_LENGTH = 700,
 	INDEX_MAX_LENGTH = 500
 };
@@ -13,19 +13,17 @@ enum BibleC_error {
 	CHAPTER_TOO_BIG = -4
 };
 
-struct Reader {
+struct Biblec_reader {
 	char *book;
 	int chapter;
 	int verse;
 	int to;
-
 	char result[VERSE_LENGTH];
-
 	FILE *file;
 	int linesRead;
 };
 
-struct Translation {
+struct Biblec_translation {
 	char name[20];
 	char lang[20];
 	char location[50];
@@ -38,8 +36,8 @@ struct Translation {
 	}book[66];
 };
 
-int parseIndexFile(struct Translation *translation, char *indexLocation);
-int reader_new(struct Reader *reader, struct Translation *translation, char *book, int chapter, int verse, int to);
-int reader_next(struct Reader *reader);
+int biblec_parse(struct Biblec_translation *translation, char *indexLocation);
+int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translation, char *book, int chapter, int verse, int to);
+int biblec_next(struct Biblec_reader *reader);
 
 #endif

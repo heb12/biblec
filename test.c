@@ -4,38 +4,35 @@
 #include "main.h"
 
 // Runtime struct
-struct Translation loadedTranslations;
+struct Biblec_translation loadedTranslation;
 
 int main() {
-	int tryFile = parseIndexFile(
-		&loadedTranslations,
+	int tryFile = biblec_parse(
+		&loadedTranslation,
 		"../bibles/web.i"
 	);	
 
 	if (tryFile) {
-		printf("Index parsing error");
+		puts("Index parsing error");
 		return 0;
 	}
 
-	struct Reader reader;
-	int tryReader = reader_new(
+	struct Biblec_reader reader;
+	int tryReader = biblec_new(
 		&reader,
-		&loadedTranslations,
+		&loadedTranslation,
 		"John",
 		3,
 		1,
-		0 // Get whole chapter
+		2
 	);
 
 	if (tryReader) {
-		printf("Verse error");
+		puts("Verse error");
 		return 0;
 	}
 
-	int status = 0;
-	while (1) {
-		status = reader_next(&reader);
-		if (status) {break;}
+	while (!biblec_next(&reader)) {
 		printf("%s\n", reader.result);
 	}
 
