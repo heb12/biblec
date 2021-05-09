@@ -1,40 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "main.h"
 
 // Runtime struct
-struct Biblec_translation loadedTranslation;
+struct Biblec_translation translation;
 
-int main() {
-	int tryFile = biblec_parse(
-		&loadedTranslation,
-		"../bibles/web.i"
-	);	
-
-	if (tryFile) {
-		puts("Index parsing error");
-		return 0;
-	}
-
-	struct Biblec_reader reader;
+int test(struct Biblec_reader *reader, char name[], int chapter, int from, int to) {
 	int tryReader = biblec_new(
-		&reader,
-		&loadedTranslation,
-		"John",
-		3,
-		1,
-		2
+		reader,
+		&translation,
+		name,
+		chapter,
+		from,
+		to
 	);
 
 	if (tryReader) {
 		puts("Verse error");
-		return 0;
+		return 1;
 	}
 
-	while (!biblec_next(&reader)) {
-		printf("%s\n", reader.result);
+	while (!biblec_next(reader)) {
+		puts(reader->result);
 	}
 
-	fclose(reader.file);
+	biblec_close(reader);
+}
+
+int main() {
+	int tryFile = biblec_parse(
+		&translation,
+		"../bibles/web.i"
+	);
+
+	if (tryFile) {
+		puts("Index parsing error");
+		return 1;
+	}
+
+	struct Biblec_reader reader;
+	for (int i = 0; i < 100000; i++) {
+		test(&reader, "Gen", 1, 1, 1);
+	}
 }

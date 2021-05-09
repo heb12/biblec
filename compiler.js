@@ -114,8 +114,6 @@ function parseBible(bibleData) {
 	}
 }
 
-
-
 function loopVerses(linesPassed, verses) {
 	for (var v = 0; v < verses.length; v++) {
 		verseFile += verses[v][1] + "\n";
@@ -147,12 +145,7 @@ function generateIndexFile(bibleData, name, lang) {
 function generateCStruct(bibleData, name) {
 	// Include main C structs.
 	indexFile = `
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../core.h"
-
-struct Translation ` + name + ` = {
+struct Biblec_Translation ` + name + ` = {
 ` + bible.length + `,
 {`;
 

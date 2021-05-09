@@ -38,7 +38,6 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 		char afterFirst[INDEX_MAX_LENGTH];
 		strcpy(afterFirst, contents);
 
-		// Tell the difference between # and @
 		if (line[0] == '#') {
 			// Copy before ':' to afterFirst
 			int c = 0;
@@ -168,4 +167,8 @@ char *book, int chapter, int verse, int to) {
 	}
 
 	return 0;
+}
+
+void biblec_close(struct Biblec_reader *reader) {
+	fclose(reader->file);
 }

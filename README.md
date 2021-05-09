@@ -15,9 +15,33 @@ node compiler.js ./web.json web bibles
 tcc biblec.c test.c
 ./a.out
 ```
-*Note: TCC and GCC should both work.
+*Note: Any C99 compiler should work.
 
 ## Features:
-1. First calculates line of Bible verse, then grabs it.
+1. First calculates line of Bible verse, then grabs it
 2. Support for more than 1 verse (John 3 16-18)
 3. Support for Getting entire chapter
+4. Load an index file or header file
+
+## API:
+```
+// Load header translation
+struct Biblec_reader reader;
+int tryReader = biblec_new(
+	&reader,
+	&myTranslation,
+	"John",
+	3,
+	16,
+	20
+);
+
+while (!biblec_next(reader)) {
+	puts(reader.result);
+}
+```
+
+```
+// Load via index file
+// (see test.c)
+```
