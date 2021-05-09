@@ -36,7 +36,7 @@ int tryReader = biblec_new(
 	20
 );
 
-while (!biblec_next(reader)) {
+while (biblec_next(reader)) {
 	puts(reader.result);
 }
 ```

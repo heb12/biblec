@@ -100,17 +100,18 @@ int getBookID(struct Biblec_translation *translation, char *book) {
 int biblec_next(struct Biblec_reader *reader) {
 	// Reached end of requested verses
 	if (reader->linesRead > reader->to) {
-		return -1;
+		return 0;
 	}
 
 	// End of file
 	if (fgets(reader->result, VERSE_LENGTH, reader->file) == NULL) {
-		return -1;
+		return 0;
 	}
 
-	strtok(reader->result, "\n"); // Strip '\n'
+	strtok(reader->result, "\n"); // Strip '\n' from file
 	reader->linesRead++;
-	return 0;
+	
+	return 1;
 }
 
 // Create a new reader structure

@@ -22,7 +22,7 @@ int test(struct Biblec_reader *reader, char name[], int chapter, int from, int t
 		return 1;
 	}
 
-	while (!biblec_next(reader)) {
+	while (biblec_next(reader)) {
 		puts(reader->result);
 	}
 
