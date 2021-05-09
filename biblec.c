@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "main.h"
 
 // Split chars and ints from string
@@ -108,7 +109,7 @@ int biblec_next(struct Biblec_reader *reader) {
 		return 0;
 	}
 
-	strtok(reader->result, "\n"); // Strip '\n' from file
+	strtok(reader->result, "\n"); // Strip '\n'
 	reader->linesRead++;
 	
 	return 1;
@@ -119,13 +120,11 @@ int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translat
 char *book, int chapter, int verse, int to) {
 	int c;
 
-	// Check book ID
 	int bookID = getBookID(translation, book);
 	if (bookID == BOOK_NOT_FOUND) {
 		return BOOK_NOT_FOUND;
 	}
 
-	// Check if requested chapter is larger than book length
 	if (translation->book[bookID].length < chapter) {
 		return CHAPTER_TOO_BIG;
 	}
@@ -137,7 +136,7 @@ char *book, int chapter, int verse, int to) {
 	}
 
 	// When 0 is passed for "to", grab the entire chapter.
-	// Else, "to" refers to how many verse to
+	// Else, "to" refers to how many verses to
 	// count in the struct.
 	if (to == 0) {
 		to = translation->book[bookID].chapters[c] - 1;

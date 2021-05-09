@@ -7,7 +7,7 @@
 // Runtime struct
 struct Biblec_translation translation;
 
-int test(struct Biblec_reader *reader, char name[], int chapter, int from, int to) {
+void test(struct Biblec_reader *reader, char name[], int chapter, int from, int to) {
 	int tryReader = biblec_new(
 		reader,
 		&translation,
@@ -19,7 +19,8 @@ int test(struct Biblec_reader *reader, char name[], int chapter, int from, int t
 
 	if (tryReader) {
 		puts("Verse error");
-		return 1;
+		biblec_close(reader);
+		exit(1);
 	}
 
 	while (biblec_next(reader)) {
@@ -41,7 +42,7 @@ int main() {
 	}
 
 	struct Biblec_reader reader;
-	for (int i = 0; i < 100000; i++) {
-		test(&reader, "Gen", 1, 1, 1);
-	}
+	
+	test(&reader, "Gen", -1000, -1000, 16);
+	test(&reader, "Gen", 2147483647, 2147483647, 2147483647);
 }
