@@ -1,15 +1,20 @@
+// Test:
+// cc *.c; valgrind ./a.out
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "main.h"
 
-// Runtime struct
 struct Biblec_translation translation;
 
-void test(struct Biblec_reader *reader, char name[], int chapter, int from, int to) {
+void test(char name[], int chapter, int from, int to) {
+	printf("Parsing: %s %d %d:%d\n", name, chapter, from, to);
+
+	struct Biblec_reader reader;
 	int tryReader = biblec_new(
-		reader,
+		&reader,
 		&translation,
 		name,
 		chapter,
@@ -18,16 +23,16 @@ void test(struct Biblec_reader *reader, char name[], int chapter, int from, int 
 	);
 
 	if (tryReader) {
-		puts("Verse error");
-		biblec_close(reader);
-		exit(1);
+		puts("BibleC error");
+		biblec_close(&reader);
+		return;
 	}
 
-	while (biblec_next(reader)) {
-		puts(reader->result);
+	while (biblec_next(&reader)) {
+		puts(reader.result);
 	}
 
-	biblec_close(reader);
+	biblec_close(&reader);
 }
 
 int main() {
@@ -42,7 +47,31 @@ int main() {
 	}
 
 	struct Biblec_reader reader;
-	
-	test(&reader, "Gen", -1000, -1000, 16);
-	test(&reader, "Gen", 2147483647, 2147483647, 2147483647);
+	clock_t start_time = clock();
+	for (int i = 0; i < 100; i++) {
+		int tryReader = biblec_new(
+			&reader,
+			&translation,
+			"John",
+			3,
+			16,
+			16
+		);
+
+		if (tryReader) {
+			biblec_close(&reader);
+			exit(1);
+		}
+
+		while (biblec_next(&reader));
+		biblec_close(&reader);
+	}
+
+	double elapsed_time = (double)(clock() - start_time) / CLOCKS_PER_SEC;
+	printf("Done in %f seconds\n", elapsed_time);
+
+	test("Gen", -1000, -1000, 16);
+	test("Gen", 2147483647, 2147483647, 2147483647);
+	test("Gen", -10, 0, 0);
+	test("Gen", 0, 0, -10);
 }

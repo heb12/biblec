@@ -120,13 +120,18 @@ int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translat
 char *book, int chapter, int verse, int to) {
 	int c;
 
+	reader->file = fopen(translation->location, "r");
+	if (reader->file == NULL) {
+		return FILE_ERROR;
+	}
+
 	int bookID = getBookID(translation, book);
 	if (bookID == BOOK_NOT_FOUND) {
 		return BOOK_NOT_FOUND;
 	}
 
 	if (translation->book[bookID].length < chapter) {
-		return CHAPTER_TOO_BIG;
+		return BAD_CHAPTER;
 	}
 
 	// Grab start line, and add until specified chapter is reached.
@@ -143,6 +148,10 @@ char *book, int chapter, int verse, int to) {
 	} else {
 		to -= verse;
 	}
+	
+	if (to < 0) {
+		return VERSE_ERROR;
+	}
 
 	// Add the line over to the specific verse
 	line += verse - 1;
@@ -153,16 +162,12 @@ char *book, int chapter, int verse, int to) {
 	reader->to = to;
 
 	reader->linesRead = 0;
-	reader->file = fopen(translation->location, "r");
-	if (reader->file == NULL) {
-		return FILE_ERROR;
-	}
 
 	// Loop through until it gets to the line
 	char verseText[VERSE_LENGTH];
 	for (int i = 0; i != line; i++) {
 		if (fgets(verseText, VERSE_LENGTH, reader->file) == NULL) {
-			return FILE_ERROR;
+			return FILE_OVERFLOW;
 		}
 	}
 

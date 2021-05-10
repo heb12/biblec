@@ -14,8 +14,10 @@
 enum Biblec_error {
 	FILE_NOT_FOUND = -1,
 	BOOK_NOT_FOUND = -2,
-	FILE_ERROR = -3,
-	CHAPTER_TOO_BIG = -4
+	FILE_OVERFLOW = -3,
+	FILE_ERROR = -4,
+	BAD_CHAPTER = -5,
+	VERSE_ERROR = -6,
 };
 
 struct Biblec_reader {
