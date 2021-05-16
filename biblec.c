@@ -62,17 +62,17 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 			}
 		} else if (line[0] == '@') {
 			char *bookInfo = strtok(afterFirst, " ");
-			strcpy(translation->book[book].name, afterFirst);
+			strcpy(translation->books[book].name, afterFirst);
 			bookInfo = strtok(NULL, " ");
-			translation->book[book].start = strToInt(bookInfo);
+			translation->books[book].start = strToInt(bookInfo);
 			bookInfo = strtok(NULL, " ");
-			translation->book[book].length = strToInt(bookInfo);
+			translation->books[book].length = strToInt(bookInfo);
 		} else if (line[0] == '!') {
 			// Loop through chapters and set them in the struct
 			int currentChapter = 0;
 			char *chapter = strtok(afterFirst, " ");
 			while (chapter != NULL) {
-				translation->book[book].chapters[currentChapter] = strToInt(chapter);
+				translation->books[book].chapters[currentChapter] = strToInt(chapter);
 				chapter = strtok(NULL, " ");
 				currentChapter++;
 			}
@@ -90,7 +90,7 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 int getBookID(struct Biblec_translation *translation, char *book) {
 	int bookID = BOOK_NOT_FOUND;
 	for (int i = 0; i < translation->length; i++) {
-		if (!strcmp(book, translation->book[i].name)) {
+		if (!strcmp(book, translation->books[i].name)) {
 			bookID = i;
 		}
 	}
@@ -109,6 +109,7 @@ int biblec_next(struct Biblec_reader *reader) {
 		return 0;
 	}
 
+	puts(reader->result);
 	strtok(reader->result, "\n"); // Strip '\n'
 	reader->linesRead++;
 	
@@ -117,7 +118,7 @@ int biblec_next(struct Biblec_reader *reader) {
 
 // Create a new reader structure
 int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translation, 
-char *book, int chapter, int verse, int to) {
+				char *book, int chapter, int verse, int to) {
 	int c;
 
 	reader->file = fopen(translation->location, "r");
@@ -130,21 +131,21 @@ char *book, int chapter, int verse, int to) {
 		return BOOK_NOT_FOUND;
 	}
 
-	if (translation->book[bookID].length < chapter) {
+	if (translation->books[bookID].length < chapter) {
 		return BAD_CHAPTER;
 	}
 
 	// Grab start line, and add until specified chapter is reached.
-	int line = translation->book[bookID].start;
+	int line = translation->books[bookID].start;
 	for (c = 0; c < chapter - 1; c++) {
-		line += translation->book[bookID].chapters[c];
+		line += translation->books[bookID].chapters[c];
 	}
 
 	// When 0 is passed for "to", grab the entire chapter.
 	// Else, "to" refers to how many verses to
 	// count in the struct.
 	if (to == 0) {
-		to = translation->book[bookID].chapters[c] - 1;
+		to = translation->books[bookID].chapters[c] - 1;
 	} else {
 		to -= verse;
 	}

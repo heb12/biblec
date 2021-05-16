@@ -40,7 +40,7 @@ struct Biblec_translation {
 		int start;
 		int length;
 		int chapters[MAX_CHAPTERS];
-	}book[MAX_BOOKS];
+	}books[MAX_BOOKS];
 };
 
 int biblec_parse(struct Biblec_translation *translation, char *indexLocation);
