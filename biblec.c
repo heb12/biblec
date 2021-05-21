@@ -109,7 +109,6 @@ int biblec_next(struct Biblec_reader *reader) {
 		return 0;
 	}
 
-	puts(reader->result);
 	strtok(reader->result, "\n"); // Strip '\n'
 	reader->linesRead++;
 	
