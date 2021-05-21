@@ -1,4 +1,3 @@
-// Use biblec.h instead, kept for now
 #ifndef __BIBLEC
 #define __BIBLEC 1
 
