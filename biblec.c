@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "main.h"
+#include "biblec.h"
 
 // Split chars and ints from string
 int strToInt(char *buf) {
