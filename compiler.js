@@ -21,7 +21,7 @@ function cli() {
 			BibleC v0.1.1\n
 			node compile.js <file> <type> <output folder>\n
 			file: Input file, Ex: ./jubl2000.json\n
-			type: c or text\n
+			type: c or i (BibleC index)\n
 			output folder: Folder to output to. Ex: bibles/data\n
 		`);
 
@@ -31,7 +31,7 @@ function cli() {
 		type = param[3];
 		folder = param[4];
 	} else {
-		console.log("Not enough parameters.\nUse as `node main.js ./jubl2000.json web bible/web`");
+		console.log("Not enough parameters.\nUse as `node main.js ./jubl2000.json i bible/web`");
 		process.exit();
 	}
 
@@ -57,18 +57,11 @@ function cli() {
 	if (type == 'c') {
 		generateCStruct(bibleData, name);
 		fs.writeFile(
-			folder + "/" + name + ".c",
+			folder + "/" + name + ".h",
 			indexFile,
 			function (err) {error.push(err)}
 		);
-
-		// TODO: Replace 66 with real calculated number
-		fs.writeFile(
-			folder + "/" + name + ".h",
-			`extern struct Translation ` + name + `[66];`,
-			function (err) {error.push(err)}
-		);
-	} else {
+	} else if (type == 'i') {
 		generateIndexFile(bibleData, name, lang);
 		console.log(indexFile);
 		fs.writeFile(
@@ -76,13 +69,13 @@ function cli() {
 			indexFile,
 			function (err) {error.push(err)}
 		);
+	} else {
+		console.log("Error, unknown type ", type);
+		return;
 	}
 
 	console.log("Done. Errors: ", error);
 }
-
-
-
 
 function parseBible(bibleData) {
 	var linesPassed = [0];
@@ -144,18 +137,14 @@ function generateIndexFile(bibleData, name, lang) {
 // Convert the JS object into a C struct.
 function generateCStruct(bibleData, name) {
 	// Include main C structs.
-	indexFile = `
-struct Biblec_Translation ` + name + ` = {
-` + bible.length + `,
-{`;
-
-	// indexFileialize the C struct by generating C code
+	indexFile = `struct Biblec_translation ` + name + ` = {\nMAX_BOOKS,\n{\n`;
+	
 	for (var i = 0; i < bibleData.length; i++) {
-		indexFile += `	{`;
-		indexFile += `"` + bibleData[i].book + `", `;
+		indexFile += `{`;
+		indexFile += `"` + bibleData[i].book + `",`;
 
-		indexFile += bibleData[i].start + `, `;
-		indexFile += bibleData[i].end + `, `;
+		indexFile += bibleData[i].start + `,`;
+		indexFile += bibleData[i].end + `,`;
 
 		indexFile += `{` + bibleData[i].chapters.join(", ") + `}`;
 		indexFile += `}`;

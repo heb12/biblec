@@ -1,11 +1,9 @@
-// Test:
-// cc *.c; valgrind ./a.out
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include "main.h"
+#include "biblec.h"
 
 struct Biblec_translation translation;
 
