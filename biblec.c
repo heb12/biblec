@@ -23,7 +23,7 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 
 	// If location is never filled in, then assume text
 	// file location is in the same folder as the index file.
-	strcpy(translation->location, indexLocation);
+	strncpy(translation->location, indexLocation, sizeof(translation->location));
 	translation->location[strlen(indexLocation) - 1] = 't';
 
 	int book = 0;
@@ -52,17 +52,17 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 			contents++; // Increment to skip ':'
 
 			if (!strcmp(afterFirst, "name")) {
-				strcpy(translation->name, contents);
+				strncpy(translation->name, contents, MAX_NAME);
 			} else if (!strcmp(afterFirst, "lang")) {
-				strcpy(translation->lang, contents);
+				strncpy(translation->lang, contents, MAX_LANG);
 			} else if (!strcmp(afterFirst, "location")) {
-				strcpy(translation->location, contents);
+				strncpy(translation->location, contents, MAX_LOCATION);
 			} else if (!strcmp(afterFirst, "length")) {
 				translation->length = strToInt(contents);
 			}
 		} else if (line[0] == '@') {
 			char *bookInfo = strtok(afterFirst, " ");
-			strcpy(translation->books[book].name, afterFirst);
+			strncpy(translation->books[book].name, afterFirst, MAX_BOOK_NAME);
 			bookInfo = strtok(NULL, " ");
 			translation->books[book].start = strToInt(bookInfo);
 			bookInfo = strtok(NULL, " ");
@@ -117,7 +117,7 @@ int biblec_next(struct Biblec_reader *reader) {
 
 // Create a new reader structure
 int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translation, 
-				char *book, int chapter, int verse, int to) {
+		char *book, int chapter, int verse, int to) {
 	int c;
 
 	reader->file = fopen(translation->location, "r");
@@ -164,6 +164,7 @@ int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translat
 	reader->linesRead = 0;
 
 	// Loop through until it gets to the line
+	// This is fastest out of tested fgetc, fread
 	char verseText[VERSE_LENGTH];
 	for (int i = 0; i != line; i++) {
 		if (fgets(verseText, VERSE_LENGTH, reader->file) == NULL) {

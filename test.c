@@ -73,3 +73,4 @@ int main() {
 	test("Gen", -10, 0, 0);
 	test("Gen", 0, 0, -10);
 }
+
