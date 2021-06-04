@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "biblec.h"
 
@@ -23,7 +24,7 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 
 	// If location is never filled in, then assume text
 	// file location is in the same folder as the index file.
-	strncpy(translation->location, indexLocation, sizeof(translation->location));
+	strncpy(translation->location, indexLocation, MAX_LOCATION - 1);
 	translation->location[strlen(indexLocation) - 1] = 't';
 
 	int book = 0;
@@ -52,17 +53,17 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 			contents++; // Increment to skip ':'
 
 			if (!strcmp(afterFirst, "name")) {
-				strncpy(translation->name, contents, MAX_NAME);
+				strncpy(translation->name, contents, MAX_NAME - 1);
 			} else if (!strcmp(afterFirst, "lang")) {
-				strncpy(translation->lang, contents, MAX_LANG);
+				strncpy(translation->lang, contents, MAX_LANG - 1);
 			} else if (!strcmp(afterFirst, "location")) {
-				strncpy(translation->location, contents, MAX_LOCATION);
+				strncpy(translation->location, contents, MAX_LOCATION - 1);
 			} else if (!strcmp(afterFirst, "length")) {
 				translation->length = strToInt(contents);
 			}
 		} else if (line[0] == '@') {
 			char *bookInfo = strtok(afterFirst, " ");
-			strncpy(translation->books[book].name, afterFirst, MAX_BOOK_NAME);
+			strcpy(translation->books[book].name, afterFirst);
 			bookInfo = strtok(NULL, " ");
 			translation->books[book].start = strToInt(bookInfo);
 			bookInfo = strtok(NULL, " ");
@@ -87,10 +88,28 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 	return 0;
 }
 
+// Case insensitive strcmp
+// I wrote this quickly without testing
+// it very much, so it may be flawed.
+int strcmpcase(char *s1, char *s2) {
+	int diff = 0;
+
+	while (*s1 | *s2) {
+		s1++;
+		s2++;
+
+		if (tolower(*s1) != tolower(*s2)) {
+			diff++;
+		}
+	}
+
+	return diff;
+}
+
 int getBookID(struct Biblec_translation *translation, char *book) {
 	int bookID = BOOK_NOT_FOUND;
 	for (int i = 0; i < translation->length; i++) {
-		if (!strcmp(book, translation->books[i].name)) {
+		if (!strcmpcase(book, translation->books[i].name)) {
 			bookID = i;
 		}
 	}
