@@ -50,7 +50,7 @@ int main() {
 		int tryReader = biblec_new(
 			&reader,
 			&translation,
-			"Gen",
+			"Exod",
 			1,
 			1,
 			1

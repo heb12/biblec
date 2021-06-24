@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "biblec.h"
 
@@ -87,29 +86,10 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 	fclose(index);
 	return 0;
 }
-
-// Case insensitive strcmp
-// I wrote this quickly without testing
-// it very much, so it may be flawed.
-int strcmpcase(char *s1, char *s2) {
-	int diff = 0;
-
-	while (*s1 | *s2) {
-		s1++;
-		s2++;
-
-		if (tolower(*s1) != tolower(*s2)) {
-			diff++;
-		}
-	}
-
-	return diff;
-}
-
 int getBookID(struct Biblec_translation *translation, char *book) {
 	int bookID = BOOK_NOT_FOUND;
 	for (int i = 0; i < translation->length; i++) {
-		if (!strcmpcase(book, translation->books[i].name)) {
+		if (!strcmp(book, translation->books[i].name)) {
 			bookID = i;
 		}
 	}
