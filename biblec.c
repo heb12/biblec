@@ -15,7 +15,7 @@ int strToInt(char *buf) {
 }
 
 // Parse BibleC index file, see format.md
-int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
+int biblec_parse(struct BiblecTranslation *translation, char *indexLocation) {
 	FILE *index = fopen(indexLocation, "r");
 	if (index == NULL) {
 		return FILE_NOT_FOUND;
@@ -86,7 +86,7 @@ int biblec_parse(struct Biblec_translation *translation, char *indexLocation) {
 	fclose(index);
 	return 0;
 }
-int getBookID(struct Biblec_translation *translation, char *book) {
+int getBookID(struct BiblecTranslation *translation, char *book) {
 	int bookID = BOOK_NOT_FOUND;
 	for (int i = 0; i < translation->length; i++) {
 		if (!strcmp(book, translation->books[i].name)) {
@@ -97,7 +97,7 @@ int getBookID(struct Biblec_translation *translation, char *book) {
 	return bookID;
 }
 
-int biblec_next(struct Biblec_reader *reader) {
+int biblec_next(struct BiblecReader *reader) {
 	// Reached end of requested verses
 	if (reader->linesRead > reader->to) {
 		return 0;
@@ -115,7 +115,7 @@ int biblec_next(struct Biblec_reader *reader) {
 }
 
 // Create a new reader structure
-int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translation, 
+int biblec_new(struct BiblecReader *reader, struct BiblecTranslation *translation, 
 		char *book, int chapter, int verse, int to) {
 	int c;
 
@@ -174,6 +174,6 @@ int biblec_new(struct Biblec_reader *reader, struct Biblec_translation *translat
 	return 0;
 }
 
-void biblec_close(struct Biblec_reader *reader) {
+void biblec_close(struct BiblecReader *reader) {
 	fclose(reader->file);
 }

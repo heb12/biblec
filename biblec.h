@@ -28,7 +28,7 @@ enum Biblec_error {
 	BIBLEC_VERSE_ERROR = -6
 };
 
-struct Biblec_reader {
+struct BiblecReader {
 	char *book;
 	int chapter;
 	int verse;
@@ -38,7 +38,7 @@ struct Biblec_reader {
 	FILE *file;
 };
 
-struct Biblec_translation {
+struct BiblecTranslation {
 	char name[MAX_NAME];
 	char lang[MAX_LANG];
 	char location[MAX_LOCATION];
@@ -51,13 +51,13 @@ struct Biblec_translation {
 	}books[MAX_BOOKS];
 };
 
-int biblec_parse(struct Biblec_translation *translation, char *indexLocation);
-int biblec_next(struct Biblec_reader *reader);
-void biblec_close(struct Biblec_reader *reader);
+int biblec_parse(struct BiblecTranslation *translation, char *indexLocation);
+int biblec_next(struct BiblecReader *reader);
+void biblec_close(struct BiblecReader *reader);
 
 int biblec_new(
-	struct Biblec_reader *reader,
-	struct Biblec_translation *translation,
+	struct BiblecReader *reader,
+	struct BiblecTranslation *translation,
 	char *book,
 	int chapter,
 	int verse,
