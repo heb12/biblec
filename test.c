@@ -5,12 +5,12 @@
 
 #include "biblec.h"
 
-struct Biblec_translation translation;
+struct BiblecTranslation translation;
 
 void test(char name[], int chapter, int from, int to) {
 	printf("Parsing: %s %d %d:%d\n", name, chapter, from, to);
 
-	struct Biblec_reader reader;
+	struct BiblecReader reader;
 	int tryReader = biblec_new(
 		&reader,
 		&translation,
@@ -44,7 +44,7 @@ int main() {
 		return 1;
 	}
 
-	struct Biblec_reader reader;
+	struct BiblecReader reader;
 	clock_t start_time = clock();
 	for (int i = 0; i < 100; i++) {
 		int tryReader = biblec_new(
