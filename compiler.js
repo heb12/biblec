@@ -123,7 +123,6 @@ function loopVerses(linesPassed, verses) {
 function generateIndexFile(bibleData, name, lang) {
 	indexFile += "#name:" + name + "\n";
 	indexFile += "#lang:" + lang + "\n";
-	indexFile += "#location:" + "bibles/web.t" + "\n";
 	indexFile += "#length:" + bibleData.length + "\n";
 	for (var i = 0; i < bibleData.length; i++) {
 		indexFile += "@" + bibleData[i].book;
