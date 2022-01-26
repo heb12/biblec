@@ -14,11 +14,13 @@ int strToInt(char *buf) {
 	return ret;
 }
 
-// Parse BibleC index file, see format.md
+// Parse BibleC index file, see 
+// https://api.heb12.com/translations/biblec/web.i
+// TODO: better error detection
 int biblec_parse(struct BiblecTranslation *translation, char *indexLocation) {
 	FILE *index = fopen(indexLocation, "r");
 	if (index == NULL) {
-		return FILE_NOT_FOUND;
+		return BIBLEC_FILE_ERROR;
 	}
 
 	// If location is never filled in, then assume text
@@ -87,7 +89,7 @@ int biblec_parse(struct BiblecTranslation *translation, char *indexLocation) {
 	return 0;
 }
 int getBookID(struct BiblecTranslation *translation, char *book) {
-	int bookID = BOOK_NOT_FOUND;
+	int bookID = BIBLEC_BOOK_ERROR;
 	for (int i = 0; i < translation->length; i++) {
 		if (!strcmp(book, translation->books[i].name)) {
 			bookID = i;
@@ -121,16 +123,16 @@ int biblec_new(struct BiblecReader *reader, struct BiblecTranslation *translatio
 
 	reader->file = fopen(translation->location, "r");
 	if (reader->file == NULL) {
-		return FILE_ERROR;
+		return BIBLEC_FILE_ERROR;
 	}
 
 	int bookID = getBookID(translation, book);
-	if (bookID == BOOK_NOT_FOUND) {
-		return BOOK_NOT_FOUND;
+	if (bookID == BIBLEC_BOOK_ERROR) {
+		return BIBLEC_BOOK_ERROR;
 	}
 
 	if (translation->books[bookID].length < chapter) {
-		return BAD_CHAPTER;
+		return BIBLEC_CHAPTER_ERROR;
 	}
 
 	// Grab start line, and add until specified chapter is reached.
@@ -149,7 +151,7 @@ int biblec_new(struct BiblecReader *reader, struct BiblecTranslation *translatio
 	}
 	
 	if (to < 0) {
-		return VERSE_ERROR;
+		return BIBLEC_VERSE_ERROR;
 	}
 
 	// Add the line over to the specific verse
